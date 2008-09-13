@@ -36,6 +36,7 @@ describe YahooBase do
 
   it 'should have finders' do
     # TODO: remove table names from the WHERE clauses, tail the test log for an example
+    # TODO: select * from upcoming.events where id=someid does not work, use `where id=event_someid`
     puts UpcomingCategory.find_by_name("Music").inspect
   end
 end

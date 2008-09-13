@@ -1,5 +1,3 @@
-require 'oauth/consumer'
-require 'oauth/client/net_http'
 
 class YqlClient
   attr_accessor :consumer, :config, :http, :request, :errno

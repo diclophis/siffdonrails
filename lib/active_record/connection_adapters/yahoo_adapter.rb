@@ -44,6 +44,64 @@ module MysqlCompat #:nodoc:
 end
 =end
 
+=begin
+class JsonResult
+  def free()
+    #free memory of result table.
+
+  def data_seek(offset)
+    #seek row.
+  end
+
+  def fetch_field()
+
+    return next Mysql::Field object.
+fetch_fields()
+
+    return Array of Mysql::Field object.
+fetch_field_direct(fieldnr)
+
+    return Mysql::Field object.
+fetch_lengths()
+
+    return Array of field length.
+fetch_row()
+
+    return row as Array.
+fetch_hash(with_table=false)
+
+    return row as Hash. If with_table is true, hash key format is "tablename.fieldname".
+field_seek(offset)
+
+    seek field.
+field_tell()
+
+    return field position.
+num_fields()
+
+    return number of fields.
+num_rows()
+
+    return number of rows.
+row_seek(offset)
+
+    seek row.
+row_tell()
+
+    return row position.
+
+ITERATOR
+
+each() {|x| ...}
+
+    'x' is array of column values.
+each_hash(with_table=false) {|x| ...}
+
+    'x' is hash of column values, and the keys are the column names.
+
+end
+=end
+
 module ActiveRecord
   class Base
 =begin
@@ -94,7 +152,7 @@ module ActiveRecord
 
       ConnectionAdapters::MysqlAdapter.new(mysql, logger, [host, username, password, database, port, socket], config)
 =end
-      ConnectionAdapters::YahooAdapter.new(nil, logger, [], config)
+      ConnectionAdapters::YahooAdapter.new(YqlClient.new, logger, [], config)
     end
   end
 
@@ -252,7 +310,7 @@ module ActiveRecord
       end
 
       # REFERENTIAL INTEGRITY ====================================
-
+=begin
       def disable_referential_integrity(&block) #:nodoc:
         old = select_value("SELECT @@FOREIGN_KEY_CHECKS")
 
@@ -263,22 +321,17 @@ module ActiveRecord
           update("SET FOREIGN_KEY_CHECKS = #{old}")
         end
       end
-
+=end
       # CONNECTION MANAGEMENT ====================================
 
       def active?
         if @connection.respond_to?(:stat)
           @connection.stat
         else
-          @connection.query 'select 1'
+          @connection.query 'show tables'
         end
 
-        # mysql-ruby doesn't raise an exception when stat fails.
-        if @connection.respond_to?(:errno)
-          @connection.errno.zero?
-        else
-          true
-        end
+        @connection.errno.zero?
       rescue Yahoo::Error
         false
       end
@@ -296,7 +349,7 @@ module ActiveRecord
       # DATABASE STATEMENTS ======================================
 
       def select_rows(sql, name = nil)
-        @connection.query_with_result = true
+        #@connection.query_with_result = true
         result = execute(sql, name)
         rows = []
         result.each { |row| rows << row }
@@ -305,7 +358,9 @@ module ActiveRecord
       end
 
       def execute(sql, name = nil) #:nodoc:
-        log(sql, name) { @connection.query(sql) }
+        log(sql, name) { 
+          json = @connection.query(sql)
+        }
       rescue ActiveRecord::StatementInvalid => exception
         if exception.message.split(":").first =~ /Packets out of order/
           raise ActiveRecord::StatementInvalid, "'Packets out of order' error was received from the database. Please update your mysql bindings (gem install mysql) and read http://dev.mysql.com/doc/mysql/en/password-hashing.html for more information.  If you're on Windows, use the Instant Rails installer to get the updated mysql bindings."

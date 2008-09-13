@@ -31,9 +31,11 @@ class YqlClient
         when Net::HTTPOK
           @errno = 0
           json = ActiveSupport::JSON.decode(response.read_body)
+          puts json.inspect
           return json
       else
         @errno = -1
+        puts response.inspect
       end
     }
   end

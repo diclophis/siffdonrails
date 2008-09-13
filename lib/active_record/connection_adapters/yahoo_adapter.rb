@@ -44,63 +44,148 @@ module MysqlCompat #:nodoc:
 end
 =end
 
-=begin
 class JsonResult
+
+  attr_accessor :json
+
+  def initialize (json)
+    @json = json
+  end
+
   def free()
     #free memory of result table.
+    raise "11"
+  end
 
   def data_seek(offset)
     #seek row.
+    raise "12"
   end
 
   def fetch_field()
+    #return next Mysql::Field object.
+    raise "13"
+  end
 
-    return next Mysql::Field object.
-fetch_fields()
+  def fetch_fields()
+    #return Array of Mysql::Field object.
+    raise "14"
+  end
 
-    return Array of Mysql::Field object.
-fetch_field_direct(fieldnr)
+  def fetch_field_direct(fieldnr)
+    #return Mysql::Field object.
+    raise "15"
+  end
 
-    return Mysql::Field object.
-fetch_lengths()
+  def fetch_lengths()
+    #return Array of field length.
+    raise "16"
+  end
 
-    return Array of field length.
-fetch_row()
+  def fetch_row()
+    #return row as Array.
+    raise "1"
+  end
 
-    return row as Array.
-fetch_hash(with_table=false)
+  def fetch_hash(with_table=false)
+    #return row as Hash. If with_table is true, hash key format is "tablename.fieldname".
+    raise "2"
+  end
 
-    return row as Hash. If with_table is true, hash key format is "tablename.fieldname".
-field_seek(offset)
+  def field_seek(offset)
+    #seek field.
+    raise "3"
+  end
 
-    seek field.
-field_tell()
+  def field_tell()
+    #return field position.
+    raise "4"
+  end
 
-    return field position.
-num_fields()
+  def num_fields()
+    #return number of fields.
+    raise "5"
+  end
 
-    return number of fields.
-num_rows()
+  def num_rows()
+    #return number of rows.
+    raise "6"
+  end
 
-    return number of rows.
-row_seek(offset)
+  def row_seek(offset)
+    #seek row.
+    raise "7"
+  end
 
-    seek row.
-row_tell()
+  def row_tell()
+    #return row position.
+    raise "8"
+  end
 
-    return row position.
-
-ITERATOR
-
-each() {|x| ...}
-
-    'x' is array of column values.
-each_hash(with_table=false) {|x| ...}
-
-    'x' is hash of column values, and the keys are the column names.
-
-end
+  def each (&block)
+    #each() {|x| ...}
+    #'x' is array of column values.
+    #raise "9"
+=begin
+    {
+      "query"=>{
+        "results"=>{
+          "table"=>{
+            "name"=>"upcoming.category",
+            "response"=>{
+              "field"=>[
+                {"name"=>"id", "type"=>"xs:string"},
+                {"name"=>"name", "type"=>"xs:string"},
+                {"name"=>"description", "type"=>"xs:string"}
+              ]
+            }
+    , "sample"=>"select * from upcoming.category where description like \"%film%\" or description like \"%theatre%\"", "description"=>"Upcoming category table", "request"=>{"query"=>{"description"=>"get list of categories"}}}}, "uri"=>"http://query.pipes.yahoo.com/v1/yql?q=DESC+upcoming.category", "lang"=>"en-US", "created"=>Sat Sep 13 04:21:48 UTC 2008, "count"=>"1", "updated"=>Sat Sep 13 04:21:48 UTC 2008}}
 =end
+    #@json["query"]["results"]["tables"]["response"]
+    @json["query"]["results"].each { |k, v|
+      case k
+        when "table"
+          v.each { |kk, vv|
+            case kk
+              when "response"
+                vv.each { |kkk, vvv|
+                  case kkk
+                    when "field"
+                      #a = vvv.each { |vvvv|
+                      #  vvvv["name"]
+                      #}.collect
+                      #yield a
+                      yield vvv
+                  else
+                    raise "wtf3 #{kkk}"
+                  end
+                }
+              when "name"
+              when "sample"
+              when "description"
+              when "request"
+              when "uri"
+              when "lang"
+              when "created"
+              when "count"
+              when "updated"
+            else
+              raise "wtf2 #{kk}"
+            end
+          }
+      else
+        raise "wtf"
+      end
+    }
+
+  end
+
+  def each_hash (with_table=false, &block)
+    #{|x| ...}
+    #'x' is hash of column values, and the keys are the column names.
+    raise "10"
+  end
+end
 
 module ActiveRecord
   class Base
@@ -290,11 +375,11 @@ module ActiveRecord
       end
 
       def quote_column_name(name) #:nodoc:
-        @quoted_column_names[name] ||= "`#{name}`"
+        @quoted_column_names[name] ||= name #"`#{name}`"
       end
 
       def quote_table_name(name) #:nodoc:
-        @quoted_table_names[name] ||= quote_column_name(name).gsub('.', '`.`')
+        @quoted_table_names[name] ||= name #quote_column_name(name).gsub('.', '`.`')
       end
 
       def quote_string(string) #:nodoc:
@@ -360,6 +445,7 @@ module ActiveRecord
       def execute(sql, name = nil) #:nodoc:
         log(sql, name) { 
           json = @connection.query(sql)
+          json_result = JsonResult.new(json)
         }
       rescue ActiveRecord::StatementInvalid => exception
         if exception.message.split(":").first =~ /Packets out of order/
@@ -483,9 +569,15 @@ module ActiveRecord
       end
 
       def columns(table_name, name = nil)#:nodoc:
-        sql = "SHOW FIELDS FROM #{quote_table_name(table_name)}"
+        sql = "DESC #{quote_table_name(table_name)}"
         columns = []
-        execute(sql, name).each { |field| columns << MysqlColumn.new(field[0], field[4], field[1], field[2] == "YES") }
+        execute(sql, name).each { |row| 
+          row.each { |field|
+            #raise field.inspect
+            #columns << YahooColumn.new(field[0], field[4], field[1], field[2] == "YES")
+            columns << YahooColumn.new(field["name"], nil, "text", false)
+          }
+        }
         columns
       end
 
@@ -560,8 +652,9 @@ module ActiveRecord
           if encoding
             @connection.options(Mysql::SET_CHARSET_NAME, encoding) rescue nil
           end
-          @connection.ssl_set(@config[:sslkey], @config[:sslcert], @config[:sslca], @config[:sslcapath], @config[:sslcipher]) if @config[:sslkey]
-          @connection.real_connect(*@connection_options)
+          #@connection.ssl_set(@config[:sslkey], @config[:sslcert], @config[:sslca], @config[:sslcapath], @config[:sslcipher]) if @config[:sslkey]
+          #@connection.real_connect(*@connection_options)
+          @connection.open(*@connection_options)
           execute("SET NAMES '#{encoding}'") if encoding
 
           # By default, MySQL 'where id is null' selects the last inserted id.

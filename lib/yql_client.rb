@@ -2,11 +2,59 @@ require 'oauth/consumer'
 require 'oauth/client/net_http'
 
 class YqlClient
-  attr_accessor :consumer
+  attr_accessor :consumer, :config, :http, :request, :errno
 
   def initialize
     @config = YAML.load_file("#{RAILS_ROOT}/config/yahoo.yml")['yahoo']
+    @errno = 0
+  end
+  
+  def close
+    @consumer = nil
+    @http = nil
+  end
 
+  def open
+    @consumer = OAuth::Consumer.new(@config['consumer_key'], @config['shared_secret'], {:http_method => :get})
+    @http = Net::HTTP.new('query.yahooapis.com')
+  end
+
+  def query (sql)
+    url = "/v1/yql?" + {:q => sql, :format => "json"}.collect { |k, v|
+      "#{k}=#{URI.escape(v).gsub("=", "%3D").gsub("'", "%22")}"
+    }.join("&")
+    #{URI::escape(sql)}&format=json"
+    puts url
+    @request = Net::HTTP::Get.new(url)
+    @request.oauth!(@http, @consumer, nil)
+    Net::HTTP.start('query.yahooapis.com', 80) { |http|
+      response = http.request(@request)
+      case response
+        when Net::HTTPOK
+          @errno = 0
+          json = ActiveSupport::JSON.decode(response.read_body)
+          return json
+      else
+        @errno = -1
+      end
+    }
+  end
+
+  def quote (string)
+    string
+  end
+
+  def stat
+    true
+  end
+
+  def version
+    1
+  end
+end
+
+#this works
+=begin
     @consumer = OAuth::Consumer.new(@config['consumer_key'], @config['shared_secret'], {:http_method => :get})
     @http = Net::HTTP.new('query.yahooapis.com')
     @request = Net::HTTP::Get.new('/v1/yql?q=show%20tables&format=json')
@@ -16,38 +64,9 @@ class YqlClient
       puts r.inspect
       puts r.read_body.inspect
     }
-  end
-  
-  def close
+=end
 
-  end
-
-  def errno
-    return 0
-  end
-
-  def open
-
-  end
-
-  def query(sql_frag)
-
-  end
-
-  def quote
-
-  end
-
-  def stat
-    
-  end
-
-  def version
-    "0.0.1"
-  end
-
-end
-
+#none of this works
 #puts @consumer.inspect
 #puts @http.inspect
 #puts @req.inspect

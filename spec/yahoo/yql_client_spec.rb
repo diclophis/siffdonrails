@@ -14,7 +14,7 @@ describe YqlClient do
   end
 
   it 'should quote input variables' do
-    @yql_client.quote
+    @yql_client.quote("\"\"!@$%^&*()")
   end
 
   it 'should respond to errno with something that responds to zero?' do
@@ -22,7 +22,13 @@ describe YqlClient do
   end
 
   it 'should query with a statement' do
-    @yql_client.query("show tables")
+    @yql_client.open
+    json = @yql_client.query("show tables")
+    puts json.inspect
+    json = @yql_client.query("select * from flickr.photos.search where text='Cat' limit 10")
+    puts json.inspect
+    json = @yql_client.query("select * from flickr.photos.search where text='Cat' limit 10")
+    puts json.inspect
   end
 
   it 'should respond to stat with a boolean' do

@@ -10,7 +10,6 @@ describe YahooBase do
   end
 
   it 'should have attributes' do
-    puts UpcomingCategory.columns.inspect
     UpcomingCategory.columns.should_not be_empty
   end
 
@@ -27,11 +26,16 @@ describe YahooBase do
     }.should_not raise_error
   end
 
+  it 'should die' do
+   puts UpcomingCategory.find(:all, :conditions => ['name = ?',  'Music']).inspect
+  end
+
   it 'should have find(:all)' do
     puts UpcomingCategory.find(:all).inspect
   end
 
   it 'should have finders' do
+    # TODO: remove table names from the WHERE clauses, tail the test log for an example
     puts UpcomingCategory.find_by_name("Music").inspect
   end
 end

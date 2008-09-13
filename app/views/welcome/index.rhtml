@@ -1,0 +1,9 @@
+<h1><%=@music.inspect%></h1>
+
+<ul>
+  <% @upcoming_categories.each { |category| %>
+    <li>
+      <%=category.name%>
+    </li>
+  <% } %>
+</ul>

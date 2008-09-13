@@ -192,9 +192,13 @@ class JsonResult
     @json["query"]["results"].each { |k, v|
       case k
         when "category"
-          v.each { |vv|
-            yield vv
-          }
+          if v.is_a?(Array) then
+            v.each { |vv|
+              yield vv
+            }
+          else
+            yield v
+          end
       else
         raise "wtf"
       end
@@ -360,7 +364,8 @@ module ActiveRecord
 
       def native_database_types #:nodoc:
         {
-          :primary_key => "int(11) DEFAULT NULL auto_increment PRIMARY KEY",
+          #:primary_key => "int(11) DEFAULT NULL auto_increment PRIMARY KEY",
+          :primary_key => "text",
           :string      => { :name => "varchar", :limit => 255 },
           :text        => { :name => "text" },
           :integer     => { :name => "int"},

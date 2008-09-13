@@ -21,5 +21,7 @@ class Plan < ActiveRecord::Base
   validates_presence_of :start_time
   #validates_presence_of :title
 
-  has_many :meetups, :class_name => "Entry", :foreign_key => :entry_id, :conditions => {:phase => Entry::MEETUP}
+  has_many :meetups, :class_name => "Entry", :foreign_key => :plan_id, :conditions => {:phase => Entry::MEETUP}
+  has_many :main_events, :class_name => "Entry", :foreign_key => :plan_id, :conditions => {:phase => Entry::MAIN_EVENT}
+  has_many :after_parties, :class_name => "Entry", :foreign_key => :plan_id, :conditions => {:phase => Entry::AFTER_PARTY}
 end

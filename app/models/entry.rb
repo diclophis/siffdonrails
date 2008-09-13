@@ -50,6 +50,10 @@ class Entry < ActiveRecord::Base
     @phase = MEETUP
   end
 
+  def remote_model
+    UpcomingEvent.find(:first, :conditions => ["event_id = ?", remote_id])
+  end
+
   protected
   
   def setup_phase

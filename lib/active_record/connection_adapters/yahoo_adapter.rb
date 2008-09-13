@@ -344,7 +344,6 @@ module ActiveRecord
       QUOTED_TRUE, QUOTED_FALSE = '1', '0'
 
       def initialize(connection, logger, connection_options, config)
-require 'active_record_calculations_monkey_patches'
         super(connection, logger)
         @connection_options, @config = connection_options, config
         @quoted_column_names, @quoted_table_names = {}, {}

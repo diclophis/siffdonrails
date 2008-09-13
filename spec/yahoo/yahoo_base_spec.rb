@@ -1,16 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-module ActiveRecord
-  module Calculations #:nodoc:
-    module ClassMethods
-      protected
-
-      def construct_calculation_sql(operation, column_name, options) #:n
-      end
-    end
-  end
-end
-
 class UpcomingCategory < YahooBase
   set_table_name "upcoming.category"
 end
@@ -38,7 +27,7 @@ describe YahooBase do
   end
 
   it 'should die' do
-    UpcomingCategory.find :all, :conditions => {:name => 'music'}
+   puts UpcomingCategory.find(:all, :conditions => ['name = ?',  'Music']).inspect
   end
 
   it 'should have find(:all)' do
@@ -46,6 +35,7 @@ describe YahooBase do
   end
 
   it 'should have finders' do
+    # TODO: remove table names from the WHERE clauses, tail the test log for an example
     puts UpcomingCategory.find_by_name("Music").inspect
   end
 end

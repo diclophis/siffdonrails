@@ -21,16 +21,6 @@ describe YqlClient do
     @yql_client.errno.zero?
   end
 
-  it 'should query with a statement' do
-    @yql_client.open
-    json = @yql_client.query("show tables")
-    puts json.inspect
-    json = @yql_client.query("select * from flickr.photos.search where text='Cat' limit 10")
-    # /v1/yql?q=select%20*%20from%20flickr.photos.search%20where%20text%3D%22Cat%22%20limit%2010&format=xml
-    # /v1/yql?q=select%20*%20from%20flickr.photos.search%20where%20text%3D%22Cat%22%20limit%2010
-    puts json.inspect
-  end
-
   it 'should respond to stat with a boolean' do
     @yql_client.stat
   end
@@ -38,4 +28,19 @@ describe YqlClient do
   it 'should have an version' do
     @yql_client.version
   end
+
+  describe "querying" do
+    it 'should query for all tables' do
+      @yql_client.open
+      json = @yql_client.query("show tables")
+      json.should_not be_empty
+    end
+
+    it 'should perform a select for flickr' do
+      @yql_client.open
+      json = @yql_client.query("select * from flickr.photos.search where text='Cat' limit 10")
+      json.should_not be_empty
+    end
+  end
+
 end

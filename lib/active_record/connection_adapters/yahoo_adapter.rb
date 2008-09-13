@@ -192,9 +192,13 @@ class JsonResult
     @json["query"]["results"].each { |k, v|
       case k
         when "category"
-          v.each { |vv|
-            yield vv
-          }
+          if v.is_a?(Array) then
+            v.each { |vv|
+              yield vv
+            }
+          else
+            yield v
+          end
       else
         raise "wtf"
       end
@@ -344,7 +348,6 @@ module ActiveRecord
       QUOTED_TRUE, QUOTED_FALSE = '1', '0'
 
       def initialize(connection, logger, connection_options, config)
-require 'active_record_calculations_monkey_patches'
         super(connection, logger)
         @connection_options, @config = connection_options, config
         @quoted_column_names, @quoted_table_names = {}, {}
@@ -361,7 +364,8 @@ require 'active_record_calculations_monkey_patches'
 
       def native_database_types #:nodoc:
         {
-          :primary_key => "int(11) DEFAULT NULL auto_increment PRIMARY KEY",
+          #:primary_key => "int(11) DEFAULT NULL auto_increment PRIMARY KEY",
+          :primary_key => "text",
           :string      => { :name => "varchar", :limit => 255 },
           :text        => { :name => "text" },
           :integer     => { :name => "int"},

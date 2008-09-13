@@ -71,7 +71,6 @@ require 'oauth'
 require 'oauth/consumer'
 require 'oauth/client/net_http'
 require 'oauth_monkey_patches'
-require 'active_record_calculations_monkey_patches'
 
 YahooBase.establish_connection({
   :adapter => "yahoo"

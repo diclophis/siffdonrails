@@ -49,9 +49,10 @@ class Entry < ActiveRecord::Base
   def meetup!
     @phase = MEETUP
   end
+
   protected
   
   def setup_phase
-    @phase = :meetup unless @phase
+    @phase = MEETUP unless @phase
   end
 end

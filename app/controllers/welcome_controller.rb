@@ -18,4 +18,21 @@ class WelcomeController < ApplicationController
       ], :offset => pager.offset, :limit => pager.per_page)
     }
   end
+  def meetup
+    redirect_to(:back) if params[:remote_id].blank?
+    @current_plan.entries.create({:phase => Entry::MEETUP})
+    redirect_to(:back)
+  end
+  def main_event
+    redirect_to(:back) if params[:remote_id].blank?
+    @current_plan.entries.create({:phase => Entry::MAIN_EVENT})
+    redirect_to(:back)
+  end
+  def after_party
+    redirect_to(:back) if params[:remote_id].blank?
+    @current_plan.entries.create({:phase => Entry::AFTER_PARTY})
+    redirect_to(:back)
+  end
+  def share
+  end
 end

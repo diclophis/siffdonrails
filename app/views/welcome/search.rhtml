@@ -20,7 +20,7 @@
           </h3>
         </li>
         <li>
-          <%=link_to(:meetup, {:action => :meetup, :remote_id => upcoming_event.idx})%>
+          <%=link_to(:meetup, {:action => :meetup, :remote_id => upcoming_event.id})%>
           <%=link_to(:main_event, {:action => :main_event, :remote_id => upcoming_event.id})%>
           <%=link_to(:after_party, {:action => :after_party, :remote_id => upcoming_event.id})%>
         </li>

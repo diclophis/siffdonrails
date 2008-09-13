@@ -75,10 +75,11 @@ module ActiveRecord
     # Establishes a connection to the database that's used by all Active Record objects.
     def self.mysql_connection(config) # :nodoc:
       config = config.symbolize_keys
-      #host     = config[:host]
-      #port     = config[:port]
-      #socket   = config[:socket]
-      #username = config[:username] ? config[:username].to_s : 'root'
+=begin
+      host     = config[:host]
+      port     = config[:port]
+      socket   = config[:socket]
+      username = config[:username] ? config[:username].to_s : 'root'
       password = config[:password].to_s
 
       if config.has_key?(:database)
@@ -92,11 +93,13 @@ module ActiveRecord
       mysql.ssl_set(config[:sslkey], config[:sslcert], config[:sslca], config[:sslcapath], config[:sslcipher]) if config[:sslkey]
 
       ConnectionAdapters::MysqlAdapter.new(mysql, logger, [host, username, password, database, port, socket], config)
+=end
+      ConnectionAdapters::YahooAdapter.new(nil, logger, [], config)
     end
   end
 
   module ConnectionAdapters
-    class MysqlColumn < Column #:nodoc:
+    class YahooColumn < Column #:nodoc:
       def extract_default(default)
         if type == :binary || type == :text
           if default.blank?
@@ -113,7 +116,7 @@ module ActiveRecord
 
       private
         def simplified_type(field_type)
-          return :boolean if MysqlAdapter.emulate_booleans && field_type.downcase.index("tinyint(1)")
+          return :boolean if YahooAdapter.emulate_booleans && field_type.downcase.index("tinyint(1)")
           return :string  if field_type =~ /enum/i
           super
         end
@@ -170,7 +173,7 @@ module ActiveRecord
     # to your environment.rb file:
     #
     #   ActiveRecord::ConnectionAdapters::MysqlAdapter.emulate_booleans = false
-    class MysqlAdapter < AbstractAdapter
+    class YahooAdapter < AbstractAdapter
       @@emulate_booleans = true
       cattr_accessor :emulate_booleans
 
@@ -190,7 +193,7 @@ module ActiveRecord
       end
 
       def adapter_name #:nodoc:
-        'MySQL'
+        'Yahoo'
       end
 
       def supports_migrations? #:nodoc:
@@ -276,7 +279,7 @@ module ActiveRecord
         else
           true
         end
-      rescue Mysql::Error
+      rescue Yahoo::Error
         false
       end
 
@@ -322,19 +325,19 @@ module ActiveRecord
       end
 
       def begin_db_transaction #:nodoc:
-        execute "BEGIN"
+        #execute "BEGIN"
       rescue Exception
         # Transactions aren't supported
       end
 
       def commit_db_transaction #:nodoc:
-        execute "COMMIT"
+        #execute "COMMIT"
       rescue Exception
         # Transactions aren't supported
       end
 
       def rollback_db_transaction #:nodoc:
-        execute "ROLLBACK"
+        #execute "ROLLBACK"
       rescue Exception
         # Transactions aren't supported
       end
@@ -354,12 +357,7 @@ module ActiveRecord
       # SCHEMA STATEMENTS ========================================
 
       def structure_dump #:nodoc:
-        if supports_views?
-          sql = "SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'"
-        else
-          sql = "SHOW TABLES"
-        end
-
+        sql = "SHOW TABLES"
         select_all(sql).inject("") do |structure, table|
           table.delete('Table_type')
           structure += select_one("SHOW CREATE TABLE #{quote_table_name(table.to_a.first.last)}")["Create Table"] + ";\n\n"

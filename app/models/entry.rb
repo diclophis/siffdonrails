@@ -17,7 +17,26 @@
 #
 
 class Entry < ActiveRecord::Base
+  after_initialize :setup_phase
   belongs_to :plan
 
   validates_presence_of :plan_id  
+
+  def for_after_party?
+    @phase == :after_party
+  end
+
+  def for_main_event?
+    @phase == :main_event
+  end
+
+  def for_meetup?
+    @phase == :meetup
+  end
+
+  protected
+  
+  def setup_phase
+    @phase = :meetup unless @phase
+  end
 end

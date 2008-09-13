@@ -1,0 +1,32 @@
+<h1>
+  Search Results
+</h1>
+
+<ul>
+  <% @upcoming_events.each { |upcoming_event| %>
+    <li>
+      <h2>
+        <%=upcoming_event.name%>
+      </h2>
+      <ul>
+        <li>
+          <p>
+            <%=upcoming_event.description%>
+          </p>
+        </li>
+        <li>
+          <h3>
+            <%=upcoming_event.pretty_start_time%>
+          </h3>
+        </li>
+        <li>
+          <%=link_to(:meetup, {:action => :meetup, :remote_id => upcoming_event.idx})%>
+          <%=link_to(:main_event, {:action => :main_event, :remote_id => upcoming_event.id})%>
+          <%=link_to(:after_party, {:action => :after_party, :remote_id => upcoming_event.id})%>
+        </li>
+      </ul>
+    </li>
+  <% } %>
+</ul>
+
+<%=will_paginate(@pager, {:params => {:search_text => params[:search_text], :location => params[:location]}}) %>

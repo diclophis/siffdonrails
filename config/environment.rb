@@ -67,8 +67,7 @@ Rails::Initializer.run do |config|
   # config.active_record.observers = :cacher, :garbage_collector
 end
 
-require 'yahoo_base'
-require 'yahoo_adapter/yahoo_adapter'
+#require 'yahoo_base'
 
 YahooBase.establish_connection({
   :adapter => "yahoo"

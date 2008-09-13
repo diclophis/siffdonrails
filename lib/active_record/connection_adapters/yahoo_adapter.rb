@@ -73,7 +73,7 @@ module ActiveRecord
 =end
 
     # Establishes a connection to the database that's used by all Active Record objects.
-    def self.mysql_connection(config) # :nodoc:
+    def self.yahoo_connection(config) # :nodoc:
       config = config.symbolize_keys
 =begin
       host     = config[:host]

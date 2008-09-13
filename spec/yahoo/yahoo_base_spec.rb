@@ -40,4 +40,12 @@ describe YahooBase do
   it 'should die' do
     UpcomingCategory.find :all, :conditions => {:name => 'music'}
   end
+
+  it 'should have find(:all)' do
+    puts UpcomingCategory.find(:all).inspect
+  end
+
+  it 'should have finders' do
+    puts UpcomingCategory.find_by_name("Music").inspect
+  end
 end

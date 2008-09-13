@@ -22,18 +22,33 @@ class Entry < ActiveRecord::Base
 
   validates_presence_of :plan_id  
 
+  AFTER_PARTY = :after_party
+  MAIN_EVENT = :main_event
+  MEETUP = :meetup
+
+  def after_party!
+    @phase = AFTER_PARTY
+  end
+
   def for_after_party?
-    @phase == :after_party
+    @phase == AFTER_PARTY
   end
 
   def for_main_event?
-    @phase == :main_event
+    @phase == MAIN_EVENT
   end
 
   def for_meetup?
-    @phase == :meetup
+    @phase == MEETUP
   end
 
+  def main_event!
+    @phase = MAIN_EVENT
+  end
+
+  def meetup!
+    @phase = MEETUP
+  end
   protected
   
   def setup_phase

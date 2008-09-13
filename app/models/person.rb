@@ -11,5 +11,6 @@
 
 class Person < ActiveRecord::Base
   has_many :plans
+  has_many :invitations
 
 end

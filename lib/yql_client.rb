@@ -20,10 +20,11 @@ class YqlClient
   end
 
   def query (sql)
-    url = "/v1/yql?" + {:q => sql, :format => "json"}.collect { |k, v|
+    query_string = {:q => sql, :format => "json"}.map do |k, v|
       "#{k}=#{URI.escape(v).gsub("=", "%3D").gsub("'", "%22")}"
-    }.join("&")
-    #{URI::escape(sql)}&format=json"
+    end.join("&")
+
+    url = "/v1/yql?#{query_string}"
     puts url
     @request = Net::HTTP::Get.new(url)
     @request.oauth!(@http, @consumer, nil)

@@ -26,8 +26,8 @@ describe YqlClient do
     json = @yql_client.query("show tables")
     puts json.inspect
     json = @yql_client.query("select * from flickr.photos.search where text='Cat' limit 10")
-    puts json.inspect
-    json = @yql_client.query("select * from flickr.photos.search where text='Cat' limit 10")
+    # /v1/yql?q=select%20*%20from%20flickr.photos.search%20where%20text%3D%22Cat%22%20limit%2010&format=xml
+    # /v1/yql?q=select%20*%20from%20flickr.photos.search%20where%20text%3D%22Cat%22%20limit%2010
     puts json.inspect
   end
 

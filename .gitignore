@@ -2,3 +2,4 @@ config/database.yml
 tmp/*
 log/*.log
 db/schema.rb
+config/yahoo.yml

@@ -1,5 +1,16 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
+module ActiveRecord
+  module Calculations #:nodoc:
+    module ClassMethods
+      protected
+
+      def construct_calculation_sql(operation, column_name, options) #:n
+      end
+    end
+  end
+end
+
 class UpcomingCategory < YahooBase
   set_table_name "upcoming.category"
 end
@@ -10,7 +21,6 @@ describe YahooBase do
   end
 
   it 'should have attributes' do
-    puts UpcomingCategory.columns.inspect
     UpcomingCategory.columns.should_not be_empty
   end
 
@@ -25,5 +35,9 @@ describe YahooBase do
       @model.description = "cheese"
       @model.name = "cheese"
     }.should_not raise_error
+  end
+
+  it 'should die' do
+    UpcomingCategory.find :all, :conditions => {:name => 'music'}
   end
 end

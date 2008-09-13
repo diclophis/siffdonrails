@@ -23,4 +23,12 @@ describe YahooBase do
     @model.description = "cheese"
     @model.name = "cheese"
   end
+
+  it 'should have find(:all)' do
+    puts UpcomingCategory.find(:all).inspect
+  end
+
+  it 'should have finders' do
+    puts UpcomingCategory.find_by_name("Music").inspect
+  end
 end

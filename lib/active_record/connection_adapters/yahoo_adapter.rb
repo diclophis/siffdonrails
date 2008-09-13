@@ -54,7 +54,8 @@ class JsonResult
 
   def free()
     #free memory of result table.
-    raise "11"
+    #raise "11"
+    @json = nil
   end
 
   def data_seek(offset)
@@ -177,13 +178,27 @@ class JsonResult
         raise "wtf"
       end
     }
+  end
 
+  def all_hashes
+    rows = []
+    each_hash { |row| rows << row }
+    rows
   end
 
   def each_hash (with_table=false, &block)
     #{|x| ...}
     #'x' is hash of column values, and the keys are the column names.
-    raise "10"
+    @json["query"]["results"].each { |k, v|
+      case k
+        when "category"
+          v.each { |vv|
+            yield vv
+          }
+      else
+        raise "wtf"
+      end
+    }
   end
 end
 
@@ -329,6 +344,7 @@ module ActiveRecord
       QUOTED_TRUE, QUOTED_FALSE = '1', '0'
 
       def initialize(connection, logger, connection_options, config)
+require 'active_record_calculations_monkey_patches'
         super(connection, logger)
         @connection_options, @config = connection_options, config
         @quoted_column_names, @quoted_table_names = {}, {}
@@ -340,7 +356,7 @@ module ActiveRecord
       end
 
       def supports_migrations? #:nodoc:
-        true
+        false
       end
 
       def native_database_types #:nodoc:
@@ -663,9 +679,10 @@ module ActiveRecord
         end
 
         def select(sql, name = nil)
-          @connection.query_with_result = true
+          #@connection.query_with_result = true
           result = execute(sql, name)
           rows = result.all_hashes
+          #rows = result
           result.free
           rows
         end

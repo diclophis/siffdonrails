@@ -10,7 +10,8 @@ describe YahooBase do
   end
 
   it 'should have attributes' do
-    puts UpcomingCategory.columns
+    puts UpcomingCategory.columns.inspect
+    UpcomingCategory.columns.should_not be_empty
   end
 
   it 'should crap on this' do
@@ -20,7 +21,9 @@ describe YahooBase do
   end
 
   it 'should not crap on this' do
-    @model.description = "cheese"
-    @model.name = "cheese"
+    lambda {
+      @model.description = "cheese"
+      @model.name = "cheese"
+    }.should_not raise_error
   end
 end

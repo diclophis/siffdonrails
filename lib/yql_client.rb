@@ -24,10 +24,10 @@ class YqlClient
 
   def query (sql)
     query_string = encode_query_string(:q => sql, :format => "json")
-
     url = "/v1/yql?#{query_string}"
     @request = Net::HTTP::Get.new(url)
     @request.oauth!(@http, @consumer, nil)
+
     Net::HTTP.start('query.yahooapis.com', 80) { |http|
       response = http.request(@request)
       case response

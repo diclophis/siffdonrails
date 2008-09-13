@@ -33,6 +33,8 @@ class YqlClient
       case response
         when Net::HTTPOK
           @errno = 0
+          #TODO
+          #ActiveRecord::Base::logger.debug(response.read_body)
           json = ActiveSupport::JSON.decode(response.read_body)
           return json
       else

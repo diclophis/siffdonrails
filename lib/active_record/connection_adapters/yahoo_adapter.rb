@@ -191,7 +191,7 @@ class JsonResult
     #'x' is hash of column values, and the keys are the column names.
     @json["query"]["results"].each { |k, v|
       case k
-        when "category"
+        when "category", "event"
           if v.is_a?(Array) then
             v.each { |vv|
               yield vv
@@ -509,7 +509,7 @@ module ActiveRecord
           unless offset = options[:offset]
             sql << " LIMIT #{limit}"
           else
-            sql << " LIMIT #{offset}, #{limit}"
+            sql << " LIMIT #{limit} OFFSET #{offset}"
           end
         end
       end

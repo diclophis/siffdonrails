@@ -1,1 +1,25 @@
-Something something something
+Siffd is a trip planner which pulls event information from yahoo's upcoming.org
+
+Siffd uses Yahoo's newest web api the Yahoo Query Language (YQL) to pull back event info. YQL greatly resembles SQL so a new database adapter was built enabling the creation active-record classes which represent various Yahoo APIs. 
+
+The following code exposes the Upcoming API through active-record:
+
+class UpcomingCategory < YahooBase
+  set_table_name "upcoming.category"
+end
+
+Now you can view upcoming categories:
+UpcomingCategory.find :all
+
+Events would be similar:
+class UpcomingEvent < YahooBase
+  set_table_name "upcoming.event"
+end
+
+UpcomingEvent.find :all
+
+At the moment, conditionals can only be exposed via array notation:
+UpcomingCategory.find(:all, :conditions => ['name = ?',  'Music'])
+ 
+There is quite a bit of work that needs to be done before the adapter is fully functional.
+

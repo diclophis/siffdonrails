@@ -30,3 +30,8 @@
 </ul>
 
 <%=will_paginate(@pager, {:params => {:search_text => params[:search_text], :location => params[:location]}}) %>
+
+<% form_tag({:action => :share, :id => @current_plan.id}) do %>
+  <%=submit_tag("the plan")%>
+<% end %>
+
